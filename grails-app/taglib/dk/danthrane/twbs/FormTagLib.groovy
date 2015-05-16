@@ -150,6 +150,8 @@ class FormTagLib {
         boolean multiple = attrs.multiple ? Boolean.valueOf(attrs.multiple as String) : false
         boolean allowEmpty = attrs.allowEmpty ?: false
         boolean renderAsCode = attrs.renderAsCode ?: false
+        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
+        String disabledAttr = disabled ? "disabled" : ""
         String multipleAttr = multiple ? "multiple" : ""
         String name = attrs.name ?: ""
         String selectByValue = attrs.selectByValue ?: ""
@@ -158,7 +160,7 @@ class FormTagLib {
 
         out << """<div class="form-group">"""
         out << "<label for='$id'>$labelText</label>"
-        out << "<select class='form-control' name='$name' $multipleAttr id='$id'>"
+        out << "<select class='form-control' name='$name' $multipleAttr id='$id' $disabledAttr>"
         if (allowEmpty) {
             out << "<option value='null'>&mdash;</option>"
         }
