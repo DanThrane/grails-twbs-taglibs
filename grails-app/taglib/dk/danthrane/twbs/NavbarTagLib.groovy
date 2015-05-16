@@ -1,5 +1,7 @@
 package dk.danthrane.twbs
 
+import static dk.danthrane.TagLibUtils.*
+
 /**
  * A tag lib for the navbar component of Bootstrap. Doesn't support anywhere near all the features that it actually
  * has.
@@ -65,6 +67,35 @@ class NavbarTagLib {
             out << " class=\"active\""
         }
         out << " role = \"${role}\">${body()}</li>"
+    }
+
+    def navDropdown = { attrs, body ->
+        String value = attrs.value ?: fail("twbs:navDropdown", "value")
+        out << """
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+            ${value} <span class="caret"></span>
+            </a>
+            ${body()}
+        </li>
+        """
+        out << g.pageProperty(name: "test")
+    }
+
+    def dropdownContainer = { attrs, body ->
+        out << """
+            <ul class="dropdown-menu" role="menu">
+                ${body()}
+            </ul>
+        """
+    }
+
+    def dropdownItem = { attrs, body ->
+        out << "<li>${body()}</li>"
+    }
+
+    def dropdownDivider = { attrs, body ->
+        out << "<li class='divider'></li>"
     }
 
 }
