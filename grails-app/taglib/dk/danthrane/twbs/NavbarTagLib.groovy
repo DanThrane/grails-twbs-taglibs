@@ -1,4 +1,4 @@
-package dk.dm844.group1.twbs
+package dk.danthrane.twbs
 
 /**
  * A tag lib for the navbar component of Bootstrap. Doesn't support anywhere near all the features that it actually

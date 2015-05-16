@@ -1,6 +1,6 @@
-package dk.dm844.group1.twbs
+package dk.danthrane.twbs
 
-import static dk.dm844.group1.TagLibUtils.fail
+import static dk.danthrane.TagLibUtils.fail
 
 class GlyphIconTagLib {
     static namespace = "twbs"

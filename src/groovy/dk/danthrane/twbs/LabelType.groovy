@@ -1,4 +1,4 @@
-package dk.dm844.group1.twbs
+package dk.danthrane.twbs
 
 enum LabelType {
     DEFAULT(clazz: null),

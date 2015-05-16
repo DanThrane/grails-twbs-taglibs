@@ -1,4 +1,4 @@
-package dk.dm844.group1
+package dk.danthrane
 
 import org.codehaus.groovy.grails.web.taglib.exceptions.GrailsTagException
 

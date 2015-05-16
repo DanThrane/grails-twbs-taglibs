@@ -1,4 +1,4 @@
-package dk.dm844.group1.twbs
+package dk.danthrane.twbs
 
 class GridTagLib {
     static namespace = "twbs"
@@ -14,6 +14,14 @@ class GridTagLib {
     def row = { attrs, body ->
         String clazz = attrs.class ?: ""
         out << "<div class='row $clazz'>"
+        out << body()
+        out << '</div>'
+    }
+
+    def fluidContainer = { attrs, body ->
+        String clazz = attrs.class ? attrs.class : ""
+        String id = attrs.id ? "id='$attrs.id'" : ""
+        out << "<div class=\"container-fluid $clazz\" $id>"
         out << body()
         out << '</div>'
     }
