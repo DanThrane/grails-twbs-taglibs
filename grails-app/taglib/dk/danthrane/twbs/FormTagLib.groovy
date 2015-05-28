@@ -44,7 +44,7 @@ class FormTagLib {
 
     private Map prepareCommonInputAttributes(String tagName, Map attrs) {
         // Common attributes
-        String name = attrs.name ?: fail(String, "name", "twbs:$tagName")
+        String name = attrs.remove("name") ?: fail(String, "name", "twbs:$tagName")
         String id = attrs.remove("id") ?: name
 
         boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
@@ -90,7 +90,8 @@ class FormTagLib {
         }
 
         [name: name, id: id, labelText: labelText, placeholder: placeholder, disabled: disabledAttr,
-         clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value]
+         clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value,
+         attrs: attrs]
     }
 
     /**
@@ -109,31 +110,18 @@ class FormTagLib {
      * validation:  (Optional) Of type {@link InputValidation}, defaults to {@link InputValidation#DEFAULT}.
      */
     def input = { attrs, body ->
-        String name = attrs.name ?: fail(String, "name", "twbs:input")
-        String id = attrs.remove("id") ?: name
-        String labelText = attrs.remove("labelText") ?: name
+        assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
+                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
+                attrs.type)
+
+        Map model = prepareCommonInputAttributes("input", attrs)
         String type = attrs.remove("type") ?: "text"
-
-        String placeholder = expandOptionalAttribute("placeholder", attrs.remove("placeholder"))
-
-        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
-        String disabledAttr = disabled ? "disabled" : ""
-
-        String clazz = attrs.class ?: ""
-
-        InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
-        String validationClass = "has-${validation.name().toLowerCase()} has-feedback"
-        if (validation == InputValidation.DEFAULT) {
-            validationClass = ""
-        }
+        model.type = type
 
         out << render([
                 plugin: "twbs3",
                 template: "/twbs/input",
-                model: [name: name, id: id, labelText: labelText,
-                        placeholder: placeholder, type: type, disabled: disabledAttr,
-                        clazz: clazz, validation: validation, validationClass: validationClass,
-                        attrs: attrs]],
+                model: model],
                 body
         )
     }

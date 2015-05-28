@@ -3,12 +3,8 @@
 <div class="form-group ${validationClass} ${clazz}">
     <label for="${id}">${labelText}</label>
 
-    <input type="${type}" class="form-control"
-           id="${id}"
-           type="${type}"
-           ${placeholder}
-           ${disabled}
-           ${TagLibUtils.expandAttributes(attrs)}>
+    <input name="${name}" type="${type}" class="form-control" id="${id}" type="${type}" value="${value}" ${placeholder}
+        ${disabled} ${raw(TagLibUtils.expandAttributes(attrs))}> %{-- The last attributes are already escaped --}%
 
     <g:if test="${validation != FormTagLib.InputValidation.DEFAULT}">
         <twbs:icon icon="${validation.icon}" class="form-control-feedback" />
