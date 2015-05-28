@@ -23,7 +23,7 @@ class GridTagLib {
         GridSize type = attrs.type ?: GridSize.MEDIUM
         String columns = attrs.cols ?: "12"
         String clazz = attrs.class ?: ""
-        String offset = attrs.offset ? "col-$type-offset-$attrs.offset" : ""
+        String offset = attrs.offset ? "col-${type.columnName}-offset-$attrs.offset" : ""
         out << "<div class=\"col-${type.columnName}-$columns $clazz $offset\">"
         out << body()
         out << "</div>"

@@ -1,6 +1,7 @@
 package dk.danthrane
 
 import org.codehaus.groovy.grails.web.taglib.exceptions.GrailsTagException
+import org.springframework.web.util.HtmlUtils
 
 class TagLibUtils {
     @Deprecated
@@ -22,6 +23,23 @@ class TagLibUtils {
         // class is supplied as a hint to the type checker, shouldn't be needed, but seems that IntelliJ
         // (at least) complains without it.
         throw new GrailsTagException("Tag $tagName requires attribute $attr!")
+    }
+
+    static String expandAttribute(String attr, value) {
+        return "$attr=\"${HtmlUtils.htmlEscape(value as String)}\""
+    }
+
+    static String expandAttributes(Map<String, ?> attributes) {
+        String result = ""
+        attributes.each { k, v -> result += expandAttribute(k, v) }
+        return result
+    }
+
+    static String expandOptionalAttribute(String attr, value) {
+        if (value != null) {
+            return expandAttribute(attr, value)
+        }
+        return ""
     }
 
 }

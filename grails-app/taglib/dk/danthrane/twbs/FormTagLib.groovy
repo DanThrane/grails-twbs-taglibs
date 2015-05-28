@@ -1,9 +1,12 @@
 package dk.danthrane.twbs
 
+import org.springframework.validation.Errors
+
+import static dk.danthrane.TagLibUtils.expandOptionalAttribute
 import static dk.danthrane.TagLibUtils.fail
 
 class FormTagLib {
-    static namespace = "twbs" // not sure if this is where it belongs? (Lars)
+    static namespace = "twbs"
 
     static enum InputValidation {
         DEFAULT(icon: null),
@@ -12,6 +15,82 @@ class FormTagLib {
         ERROR(icon: Icon.REMOVE)
 
         Icon icon
+    }
+
+    private void assistAutoComplete(... dummy) {
+        // Unfortunately we cannot simply ask for the attributes map, as this will break IntelliJ's simple attribute
+        // auto-complete. Rather have a bit of extra typing in this tag-lib, than having to remember every attribute
+        // for every tag. So we call this function so that it can see that they are in use, even though this function
+        // doesn't care at all for them. All the work is really done by prepareCommonInputAttributes
+
+        // TODO Check if there are other ways of hinting these are needed
+    }
+
+    private String findFieldFromName(String name) {
+        int idx = name.lastIndexOf('.')
+        if (idx != -1 && idx != name.length() - 1) {
+            return name.substring(idx + 1)
+        }
+        return name
+    }
+
+    private String getValidationClass(InputValidation validation) {
+        String validationClass = "has-${validation.name().toLowerCase()} has-feedback"
+        if (validation == InputValidation.DEFAULT) {
+            validationClass = ""
+        }
+        return validationClass
+    }
+
+    private Map prepareCommonInputAttributes(String tagName, Map attrs) {
+        // Common attributes
+        String name = attrs.name ?: fail(String, "name", "twbs:$tagName")
+        String id = attrs.remove("id") ?: name
+
+        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
+        String disabledAttr = disabled ? "disabled" : ""
+
+        // Styling
+        String clazz = attrs.class ?: ""
+        String placeholder = expandOptionalAttribute("placeholder", attrs.remove("placeholder"))
+
+        String labelText = attrs.remove("labelText")
+        if (labelText == null) {
+            String labelCode = attrs.remove("labelCode")
+            if (labelCode != null) {
+                labelText = g.message(code: labelCode)
+            } else {
+                labelText = name
+            }
+        }
+
+        // Validation
+        InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
+
+        // Value
+        String value = attrs.remove("value")
+
+        // Value from object
+        def bean = attrs.remove("bean")
+        String beanField = attrs.remove("beanField") ?: findFieldFromName(name)
+        if (value == null && bean != null) {
+            if (bean.hasProperty(beanField)) {
+                value = bean.properties[beanField]
+            }
+
+            // Validation from object
+            if (bean.hasProperty("errors")) {
+                Errors errors = bean.errors
+                if (errors) {
+                    if (errors.getFieldError(beanField)) {
+                        validation = InputValidation.ERROR
+                    }
+                }
+            }
+        }
+
+        [name: name, id: id, labelText: labelText, placeholder: placeholder, disabled: disabledAttr,
+         clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value]
     }
 
     /**
@@ -31,13 +110,15 @@ class FormTagLib {
      */
     def input = { attrs, body ->
         String name = attrs.name ?: fail(String, "name", "twbs:input")
-        String id = attrs.id ?: name
-        String labelText = attrs.labelText ?: name
-        String placeholder = attrs.placeholder ? "placeholder=\"$attrs.placeholder\"" : ""
-        String type = attrs.type ?: "text"
+        String id = attrs.remove("id") ?: name
+        String labelText = attrs.remove("labelText") ?: name
+        String type = attrs.remove("type") ?: "text"
+
+        String placeholder = expandOptionalAttribute("placeholder", attrs.remove("placeholder"))
+
         boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
         String disabledAttr = disabled ? "disabled" : ""
-        String value = attrs.value ?: ""
+
         String clazz = attrs.class ?: ""
 
         InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
@@ -46,23 +127,15 @@ class FormTagLib {
             validationClass = ""
         }
 
-        out << """
-        <div class="form-group $validationClass $clazz">
-            <label for="$id">$labelText</label>
-            <input type="$type" name="$name" value="${value}" class="form-control" id="$id" $placeholder $disabledAttr>
-        """
-        if (validation != InputValidation.DEFAULT) {
-            out << twbs.icon(icon: validation.icon, class: "form-control-feedback")
-            out << """
-            <span class="sr-only">(${validation.name().toLowerCase()})</span>
-            """
-        }
-        out << """
-            <p class="help-block">
-                ${body()}
-            </p>
-        </div>
-        """
+        out << render([
+                plugin: "twbs3",
+                template: "/twbs/input",
+                model: [name: name, id: id, labelText: labelText,
+                        placeholder: placeholder, type: type, disabled: disabledAttr,
+                        clazz: clazz, validation: validation, validationClass: validationClass,
+                        attrs: attrs]],
+                body
+        )
     }
 
     def textArea = { attrs, body ->
