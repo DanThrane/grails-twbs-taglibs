@@ -65,7 +65,7 @@ class FormTagLib {
         }
 
         // Validation
-        InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
+        InputValidation validation = attrs.remove("validation") ?: InputValidation.DEFAULT
 
         // Value
         String value = attrs.remove("value")
@@ -95,72 +95,44 @@ class FormTagLib {
     }
 
     /**
-     * Displays a Bootstrap input. It uses form group, which sets the width of the element to 100%. It comes with
-     * a label.
+     * Displays a Bootstrap input.
+     *
+     * It uses form group, which sets the width of the element to 100%. It comes with a label.
+     *
+     * All core form attributes are accepted. Extra attributes are applied to the &lt;input&gt; element
      *
      * Body:        (Optional) Provides a help block for the input field.
      *
-     * Attributes
-     * name:        The 'name' attribute used on the input field.
-     * labelText:   (Optional) The text for the label. Defaults to the name attribute
+     * Additional attributes:
      * type:        (Optional) The 'type' attribute used on the input field. Defaults to "text"
-     * id:          (Optional) The 'id' attribute used for the label and input. Will default to the name attribute
-     * placeholder: (Optional) The 'placeholder' attribute used for the input. Will default to an empty string.
-     * disabled:    (Optional) If the field should be disabled. Defaults to false.
-     * validation:  (Optional) Of type {@link InputValidation}, defaults to {@link InputValidation#DEFAULT}.
      */
     def input = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
-                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
-                attrs.type)
+                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField)
 
         Map model = prepareCommonInputAttributes("input", attrs)
         String type = attrs.remove("type") ?: "text"
         model.type = type
 
-        out << render([
-                plugin: "twbs3",
-                template: "/twbs/input",
-                model: model],
-                body
-        )
+        out << render([plugin: "twbs3", template: "/twbs/input", model: model], body)
     }
 
+    /**
+     * Displays a Bootstrap text area.
+     *
+     * It uses form group, which sets the width of the element to 100%. It comes with a label.
+     *
+     * All core form attributes are accepted. Extra attributes are applied to the &lt;textarea&gt; element
+     *
+     * Body:        (Optional) Provides a help block for the field.
+     */
     def textArea = { attrs, body ->
-        String name = attrs.name ?: fail(String, "name", "twbs:input")
-        String id = attrs.id ?: name
-        String labelText = attrs.labelText ?: name
-        String rows = attrs.rows ?: "3"
-        String placeholder = attrs.placeholder ? "placeholder=\"$attrs.placeholder\"" : ""
-        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
-        String disabledAttr = disabled ? "disabled" : ""
-        String value = attrs.value ?: ""
-        String clazz = attrs.class ?: ""
+        assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
+                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField)
 
-        InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
-        String validationClass = "has-${validation.name().toLowerCase()} has-feedback"
-        if (validation == InputValidation.DEFAULT) {
-            validationClass = ""
-        }
+        Map model = prepareCommonInputAttributes("textArea", attrs)
 
-        out << """
-        <div class="form-group $validationClass $clazz">
-            <label for="$id">$labelText</label>
-            <textarea name="$name" rows="$rows" class="form-control" id="$id" $placeholder
-                $disabledAttr>$value</textarea>
-        """
-        if (validation != InputValidation.DEFAULT) {
-            out << twbs.icon(icon: validation.icon, class: "form-control-feedback")
-            out << """
-            <span class="sr-only">(${validation.name().toLowerCase()})</span>
-            """
-        }
-        out << """
-            <p class="help-block">
-                ${body()}
-            </p>
-        </div>
-        """
+        out << render([plugin: "twbs3", template: "/twbs/textarea", model: model], body)
     }
 
     /**
