@@ -52,6 +52,7 @@ class FormTagLib {
 
         // Styling
         String clazz = attrs.class ?: ""
+        String rawPlaceholder = attrs.placeholder
         String placeholder = expandOptionalAttribute("placeholder", attrs.remove("placeholder"))
 
         String labelText = attrs.remove("labelText")
@@ -91,7 +92,7 @@ class FormTagLib {
 
         [name: name, id: id, labelText: labelText, placeholder: placeholder, disabled: disabledAttr,
          clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value,
-         attrs: attrs]
+         attrs: attrs, rawPlaceholder: rawPlaceholder]
     }
 
     /**
@@ -140,6 +141,8 @@ class FormTagLib {
      *
      * All core form attributes are accepted, except for placeholder. Extra attributes are applied to the
      * &lt;input&gt; element
+     *
+     * Body:        This tag doesn't take any body.
      */
     def checkbox = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
@@ -159,61 +162,70 @@ class FormTagLib {
     /**
      * Displays a select.
      *
-     * body:        This tag doesn't take any body.
+     * All core form attributes are accepted. Extra attributes are applied to the
+     * &lt;select&gt; element
+     *
+     * Note that the placeholder attribute is used for the "empty" option. Thus it will only be shown if the
+     * "allowEmpty" attribute is set to true.
+     *
+     * Body:        (Optional) Provides a help block for the input field.
      * list:        A list of items that will be shown in the select box.
      * multiple:    (Optional) If the select should allow multiple selection, defaults to false.
      * name:        (Optional) The name attribute used for the select, defaults to an empty string.
      * property:    (Optional) If the object passed in the list is a non primitive, then the value of that property
      *              will be passed into the 'value' attribute of the option tag. This will default to "id" (that is the
      *              tag will work out of the box for domain models).
-     * renderAsCode:(Optional) If the message should be rendered as an i18n code. Defaults to false
      */
     def select = { attrs, body ->
-        List list = attrs.list != null ? attrs.list : fail(List, "list", "twbs:select")
-        String property = attrs.property ?: "id"
-        boolean multiple = attrs.multiple ? Boolean.valueOf(attrs.multiple as String) : false
-        boolean allowEmpty = attrs.allowEmpty ?: false
-        boolean renderAsCode = attrs.renderAsCode ?: false
-        boolean disabled = attrs.disabled ? Boolean.valueOf(attrs.disabled as String) : false
-        String disabledAttr = disabled ? "disabled" : ""
-        String multipleAttr = multiple ? "multiple" : ""
-        String name = attrs.name ?: ""
-        String selectByValue = attrs.selectByValue ?: ""
-        String labelText = attrs.labelText ?: name
-        String id = attrs.id ?: name
+        assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.placeholder)
 
-        out << """<div class="form-group">"""
-        out << "<label for='$id'>$labelText</label>"
-        out << "<select class='form-control' name='$name' $multipleAttr id='$id' $disabledAttr>"
+        Map model = prepareCommonInputAttributes("select", attrs)
+
+        String property = attrs.remove("property") ?: "id"
+        boolean allowEmpty = attrs.remove("allowEmpty") ?: false
+        String multiple = attrs.remove("multiple")
+        String multipleAttr = ""
+        List listForTemplate = []
+        List list = attrs.remove("list")
+        if (list == null) {
+            fail("list", "twbs:select")
+        }
+
+        if (multiple != null && Boolean.valueOf(multiple)) {
+            multipleAttr = "multiple"
+        }
+
         if (allowEmpty) {
-            out << "<option value='null'>&mdash;</option>"
+            listForTemplate.add([value: "null", isSelected: false, selected: "", message: model.rawPlaceholder ?: "-"])
         }
+
         list.each {
+            def item = [:]
             if (it.hasProperty(property)) {
-                def value = it.properties[property]
-                out << "<option value='${value}'"
-                if (selectByValue as String == value as String) {
-                    out << " selected"
-                }
-                String message = (renderAsCode) ? g.message(code: it.toString()) : it.toString()
-                out << ">${message}</option>"
+                item.value = it.properties[property]
+                item.message = it.toString()
+                item.isSelected = model.value != null && model.value == item.message
             } else {
-                out << "<option"
-                if (it as String == selectByValue) {
-                    out << " selected"
-                }
-                String message = (renderAsCode) ? g.message(code: it.toString()) : it.toString()
-                out << ">${message}</option>"
+                item.value = it.toString()
+                item.message = item.value
+                item.isSelected = model.value != null && it as String == model.value
             }
+            item.selected = item.isSelected ? "selected" : ""
+            listForTemplate.add(item)
         }
-        out << "</select></div>"
+
+        model.list = listForTemplate
+        model.multiple = multipleAttr
+        out << render([plugin: "twbs3", template: "/twbs/select", model: model], body)
     }
 
     def dualbox = { attrs, body ->
         String prefix = attrs.prefix ?: fail(String, "prefix", "twbs:dualbox")
         List available = attrs.available != null ? attrs.available : []
         List selected = attrs.selected != null ? attrs.selected : []
-        out << render(template: "/twbs/dualbox", model: [prefix: prefix, available: available, selected: selected])
+        out << render(plugin: "twbs3", template: "/twbs/dualbox",
+                model: [prefix: prefix, available: available, selected: selected])
     }
 
     def requireDualboxAssets = { attrs, body ->
