@@ -138,31 +138,22 @@ class FormTagLib {
     /**
      * Displays a checkbox.
      *
-     * body:        The body will be shown as the text for the checkbox
-     * validation:  (Optional) Of type {@link InputValidation}, defaults to {@link InputValidation#DEFAULT}. If this
-     *              is not default, then the box will be colored appropriately to its validation state.
+     * All core form attributes are accepted, except for placeholder. Extra attributes are applied to the
+     * &lt;input&gt; element
      */
     def checkbox = { attrs, body ->
-        InputValidation validation = attrs.validation ?: InputValidation.DEFAULT
-        String validationClass = "has-${validation.name().toLowerCase()}"
-        if (validation == InputValidation.DEFAULT) {
-            validationClass = ""
-        }
+        assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField)
 
-        String name = attrs.name ?: fail(String, "name", "twbs:checkbox")
-        if (validation != InputValidation.DEFAULT) {
-            out << "<div class='$validationClass'>"
+        Map model = prepareCommonInputAttributes("checkbox", attrs)
+        String checkedAttribute = ""
+        if (model.value) {
+            model.value = Boolean.parseBoolean(model.value)
+            if (model.value) checkedAttribute = "checked"
         }
-        out << """
-        <div class="checkbox">
-            <label class="btn btn-link">
-                <input type="checkbox" name="$name" id="$name"/>${body()}
-            </label>
-        </div>
-        """
-        if (validation != InputValidation.DEFAULT) {
-            out << "</div>"
-        }
+        model.checked = checkedAttribute
+
+        out << render([plugin: "twbs3", template: "/twbs/checkbox", model: model], body)
     }
 
     /**
