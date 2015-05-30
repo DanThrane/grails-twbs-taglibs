@@ -1,7 +1,5 @@
 package dk.danthrane.twbs
 
-import org.codehaus.groovy.grails.web.util.StreamCharBuffer
-
 import java.text.DecimalFormat
 
 import static dk.danthrane.TagLibUtils.*
@@ -41,6 +39,7 @@ class ProgressBarTagLib {
 
         // Extra DOM attributes
         String clazz = attrs.remove("class")
+        String id = attrs.remove("id")
 
         // Prepare model
         long range = maxValue - minValue
@@ -67,7 +66,7 @@ class ProgressBarTagLib {
         }
 
         Map model = [showLabel: showLabel, clazz: clazz, label: label, barClasses: classes.join(" "),
-                     minValue: minValue, maxValue: maxValue, value: value, style: style]
+                     minValue: minValue, maxValue: maxValue, value: value, style: style, id: id]
         out << render([plugin: "twbs3", template: "/twbs/progressbar/item", model: model], body)
     }
 

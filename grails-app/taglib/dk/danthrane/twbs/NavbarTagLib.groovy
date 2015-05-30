@@ -1,101 +1,116 @@
 package dk.danthrane.twbs
 
+import dk.danthrane.util.TagCaptureService
+import dk.danthrane.util.TagContextService
+
 import static dk.danthrane.TagLibUtils.*
 
 /**
- * A tag lib for the navbar component of Bootstrap. Doesn't support anywhere near all the features that it actually
- * has.
+ * @author Dan Thrane
  */
 class NavbarTagLib {
-    // Should components, like this, have its own namespace instead of one global twbs namespace? (Dan)
     static namespace = "twbs"
 
+    TagCaptureService tagCaptureService
+    TagContextService tagContextService
+
     def navbar = { attrs, body ->
-        String title = attrs.title ?: ""
-        String image = attrs.image ? "<img src='$attrs.image' alt='Logo'/>" : ""
-        // TODO Add more features here
-        out << """
-        <nav class=\"navbar navbar-default\">
-            <div class=\"container-fluid\">
-                <div class=\"navbar-header\">
-                    <button type=\"button\" class=\"navbar-toggle collapsed\" 
-                        data-toggle=\"collapse\" data-target=\"#navbar\" aria-expanded=\"false\" 
-                        aria-controls=\"navbar\">
-                        <span class=\"sr-only\">Toggle navigation</span>
-                        <span class=\"icon-bar\"></span>
-                        <span class=\"icon-bar\"></span>
-                        <span class=\"icon-bar\"></span>
-                    </button>
-                    <a class=\"navbar-brand\" href=\"${createLink(uri: '/')}\">$image $title</a>
-                </div>
-                <div id=\"navbar\" class=\"navbar-collapse collapse\">
-                    ${body()}
-                </div>
-            </div>
-        </nav>
-        """
-    }
+        tagContextService.context("twbs:navbar") {
+            String bodyContent = body()
+            tagCaptureService.requireTags("twbs:navbar", "navbar-brand")
 
-    def navcontainer = { attrs, body ->
-        def location = attrs.location ? "navbar-$attrs.location" : ""
-        out << """
-        <ul class=\"nav navbar-nav $location\">
-            ${body()}
-        </ul>
-        """
-    }
+            NavBarPlacement placement = attrs.remove("placement") ?: NavBarPlacement.DEFAULT
+            boolean inverse = optionalBoolean(attrs.remove("inverse"))
 
-    def navform = { attrs, body ->
-        def location = attrs.location ? "navbar-$attrs.location" : ""
-        out << """
-        <form class=\"navbar-form $location\">
-            ${body()}
-        </form>
-        """
-    }
+            Map model = [navType: (inverse) ? "navbar-inverse" : "navbar-default", navPlacement: placement.className]
 
-    def subNavBar = { attrs, body ->
-        out << """<ul class=\"nav nav-tabs\">
-                    ${body()}
-                </ul>"""
-    }
-
-    def navitem = { attrs, body ->
-        def role = attrs.role ?: ""
-        out << "<li"
-        if (attrs.active) {
-            out << " class=\"active\""
+            out << render([plugin: "twbs3", template: "/twbs/navbar/navbar", model: model], { bodyContent })
         }
-        out << " role = \"${role}\">${body()}</li>"
     }
 
-    def navDropdown = { attrs, body ->
-        String value = attrs.value ?: fail("twbs:navDropdown", "value")
-        out << """
-        <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-            ${value} <span class="caret"></span>
-            </a>
-            ${body()}
-        </li>
-        """
-        out << g.pageProperty(name: "test")
+    def navbarPullLeft = { attrs, body ->
+        tagContextService.context("twbs:navbarPullLeft") {
+            out << body()
+        }
     }
 
-    def dropdownContainer = { attrs, body ->
-        out << """
-            <ul class="dropdown-menu" role="menu">
-                ${body()}
-            </ul>
-        """
+    def navbarPullRight = { attrs, body ->
+        tagContextService.context("twbs:navbarPullRight") {
+            out << body()
+        }
     }
 
-    def dropdownItem = { attrs, body ->
-        out << "<li>${body()}</li>"
+    def navbarText = { attrs, body ->
+        String clazz = attrs.remove("class")
+        String pull = getNavBarPullClass()
+        Map model = [clazz: clazz, pull: pull, attrs: attrs]
+        out << render([plugin: "twbs3", template: "/twbs/navbar/text", model: model], body)
     }
 
-    def dropdownDivider = { attrs, body ->
-        out << "<li class='divider'></li>"
+    def navbarNonNavLink = { attrs, body ->
+        assistAutoComplete(attrs.elementId, attrs.absolute, attrs.action, attrs.base, attrs.controller, attrs.event,
+                attrs.fragment, attrs.id, attrs.mapping, attrs.params, attrs.uri, attrs.url)
+        String baseClass = attrs.class ?: ""
+        baseClass += " navbar-link"
+        attrs.class = baseClass
+        out << g.link(attrs, body)
+    }
+
+    def navbarLinks = { attrs, body ->
+        String clazz = attrs.remove("class")
+        String pull = getNavBarPullClass()
+        Map model = [clazz: clazz, pull: pull, attrs: attrs]
+        out << render([plugin: "twbs3", template: "/twbs/navbar/links", model: model], body)
+    }
+
+    def navbarLink = { attrs, body ->
+        assistAutoComplete(attrs.elementId, attrs.absolute, attrs.action, attrs.base, attrs.controller, attrs.event,
+                attrs.fragment, attrs.id, attrs.mapping, attrs.params, attrs.uri, attrs.url)
+
+        String classes = ""
+        boolean active = optionalBoolean(attrs.remove("active"))
+        if (active) {
+            classes = "active"
+        }
+
+        String bodyContent = body()
+        bodyContent += """<span class="sr-only">(current)</span>"""
+
+        String link = g.link(attrs, { bodyContent })
+
+        Map model = [link: link, classes: classes]
+        out << render([plugin: "twbs3", template: "/twbs/navbar/link", model: model], body)
+    }
+
+    def navbarForm = { attrs, body ->
+        tagContextService.context("twbs:navbarForm") {
+            String clazz = attrs.remove("class")
+            String pull = getNavBarPullClass()
+            Map model = [clazz: clazz, pull: pull, attrs: attrs]
+            out << render([plugin: "twbs3", template: "/twbs/navbar/form", model: model], body)
+        }
+    }
+
+    private String getNavBarPullClass() {
+        switch (getNavBarPull()) {
+            case -1:
+                return "navbar-left"
+            case 0:
+                return ""
+            case 1:
+                return "navbar-right"
+            default:
+                throw new IllegalArgumentException("Unknown pull")
+        }
+    }
+
+    private int getNavBarPull() {
+        if (tagContextService.isInContext("twbs:navbarPullLeft")) {
+            return -1
+        } else if (tagContextService.isInContext("twbs:navbarPullRight")) {
+            return 1
+        }
+        return 0
     }
 
 }

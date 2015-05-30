@@ -13,4 +13,8 @@ class TwbsSampleController {
     def progressbar() {
         [:]
     }
+
+    def navbar () {
+        [:]
+    }
 }
