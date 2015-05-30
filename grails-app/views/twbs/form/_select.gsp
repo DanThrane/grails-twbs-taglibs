@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.TagLibUtils; dk.danthrane.twbs.FormTagLib.InputValidation" %>
+<%@ page import="dk.danthrane.TagLibUtils; dk.danthrane.twbs.Validation" %>
 <div class="form-group ${validationClass} ${clazz}">
     <label for='${id}'>${labelText}</label>
     <select class='form-control' name='${name}' ${multiple} id='${id}' ${disabled} ${raw(TagLibUtils.expandAttributes(attrs))}>

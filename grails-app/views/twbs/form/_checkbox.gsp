@@ -1,6 +1,6 @@
-<%@ page import="dk.danthrane.TagLibUtils; dk.danthrane.twbs.FormTagLib.InputValidation" %>
+<%@ page import="dk.danthrane.twbs.FormTagLib; dk.danthrane.TagLibUtils; dk.danthrane.twbs.Validation" %>
 
-<g:if test="${validation != InputValidation.DEFAULT}">
+<g:if test="${validation != Validation.DEFAULT}">
     <div class='${validationClass}'>
 </g:if>
 
@@ -12,6 +12,6 @@
     </label>
 </div>
 
-<g:if test="${validation != InputValidation.DEFAULT}">
+<g:if test="${validation != Validation.DEFAULT}">
     </div>
 </g:if>

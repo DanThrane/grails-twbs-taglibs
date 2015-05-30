@@ -2,29 +2,10 @@ package dk.danthrane.twbs
 
 import org.springframework.validation.Errors
 
-import static dk.danthrane.TagLibUtils.expandOptionalAttribute
-import static dk.danthrane.TagLibUtils.fail
+import static dk.danthrane.TagLibUtils.*
 
 class FormTagLib {
     static namespace = "twbs"
-
-    static enum InputValidation {
-        DEFAULT(icon: null),
-        SUCCESS(icon: Icon.OK),
-        WARNING(icon: Icon.ALERT),
-        ERROR(icon: Icon.REMOVE)
-
-        Icon icon
-    }
-
-    private void assistAutoComplete(... dummy) {
-        // Unfortunately we cannot simply ask for the attributes map, as this will break IntelliJ's simple attribute
-        // auto-complete. Rather have a bit of extra typing in this tag-lib, than having to remember every attribute
-        // for every tag. So we call this function so that it can see that they are in use, even though this function
-        // doesn't care at all for them. All the work is really done by prepareCommonInputAttributes
-
-        // TODO Check if there are other ways of hinting these are needed
-    }
 
     private String findFieldFromName(String name) {
         int idx = name.lastIndexOf('.')
@@ -34,9 +15,9 @@ class FormTagLib {
         return name
     }
 
-    private String getValidationClass(InputValidation validation) {
-        String validationClass = "has-${validation.name().toLowerCase()} has-feedback"
-        if (validation == InputValidation.DEFAULT) {
+    private String getValidationClass(Validation validation) {
+        String validationClass = "has-${validation.baseName} has-feedback"
+        if (validation == Validation.DEFAULT) {
             validationClass = ""
         }
         return validationClass
@@ -66,7 +47,7 @@ class FormTagLib {
         }
 
         // Validation
-        InputValidation validation = attrs.remove("validation") ?: InputValidation.DEFAULT
+        Validation validation = attrs.remove("validation") ?: Validation.DEFAULT
 
         // Value
         String value = attrs.remove("value")
@@ -84,7 +65,7 @@ class FormTagLib {
                 Errors errors = bean.errors
                 if (errors) {
                     if (errors.getFieldError(beanField)) {
-                        validation = InputValidation.ERROR
+                        validation = Validation.ERROR
                     }
                 }
             }
@@ -115,7 +96,7 @@ class FormTagLib {
         String type = attrs.remove("type") ?: "text"
         model.type = type
 
-        out << render([plugin: "twbs3", template: "/twbs/input", model: model], body)
+        out << render([plugin: "twbs3", template: "/twbs/form/input", model: model], body)
     }
 
     /**
@@ -133,7 +114,7 @@ class FormTagLib {
 
         Map model = prepareCommonInputAttributes("textArea", attrs)
 
-        out << render([plugin: "twbs3", template: "/twbs/textarea", model: model], body)
+        out << render([plugin: "twbs3", template: "/twbs/form/textarea", model: model], body)
     }
 
     /**
@@ -156,7 +137,7 @@ class FormTagLib {
         }
         model.checked = checkedAttribute
 
-        out << render([plugin: "twbs3", template: "/twbs/checkbox", model: model], body)
+        out << render([plugin: "twbs3", template: "/twbs/form/checkbox", model: model], body)
     }
 
     /**
@@ -217,24 +198,7 @@ class FormTagLib {
 
         model.list = listForTemplate
         model.multiple = multipleAttr
-        out << render([plugin: "twbs3", template: "/twbs/select", model: model], body)
-    }
-
-    def dualbox = { attrs, body ->
-        String prefix = attrs.prefix ?: fail(String, "prefix", "twbs:dualbox")
-        List available = attrs.available != null ? attrs.available : []
-        List selected = attrs.selected != null ? attrs.selected : []
-        out << render(plugin: "twbs3", template: "/twbs/dualbox",
-                model: [prefix: prefix, available: available, selected: selected])
-    }
-
-    def requireDualboxAssets = { attrs, body ->
-        out << asset.javascript(src: "components/dualbox.js")
-    }
-
-    def initDualbox = { attrs, body ->
-        String prefix = attrs.prefix ?: fail(String, "prefix", "twbs:initDualbox")
-        out << "dualbox.init(\"$prefix\");"
+        out << render([plugin: "twbs3", template: "/twbs/form/select", model: model], body)
     }
 
 }
