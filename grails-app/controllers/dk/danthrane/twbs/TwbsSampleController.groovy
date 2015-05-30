@@ -9,4 +9,8 @@ class TwbsSampleController {
     def table() {
         [:]
     }
+
+    def progressbar() {
+        [:]
+    }
 }
