@@ -17,4 +17,8 @@ class TwbsSampleController {
     def navbar () {
         [:]
     }
+
+    def buttons() {
+        [:]
+    }
 }

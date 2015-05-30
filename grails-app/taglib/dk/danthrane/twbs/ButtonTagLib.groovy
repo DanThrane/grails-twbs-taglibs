@@ -1,72 +1,61 @@
 package dk.danthrane.twbs
 
+import dk.danthrane.util.TagContextService
+
+import static dk.danthrane.TagLibUtils.*
+
 class ButtonTagLib {
     static namespace = "twbs"
+    TagContextService tagContextService
 
-    static enum ButtonSize {
-        LARGE(clazz: "lg"),
-        DEFAULT(clazz: null),
-        SMALL(clazz: "sm"),
-        XTRA_SMALL(clazz: "xs")
+    private Map prepareCommonButtonAttributes(attrs) {
+        // Attributes
+        ButtonSize size = attrs.remove("size") ?: ButtonSize.DEFAULT
+        ButtonStyle style = attrs.remove("style") ?: ButtonStyle.DEFAULT
+        String clazz = attrs.remove("class") ?: ""
+        boolean block = optionalBoolean(attrs.remove("block"))
+        boolean active = optionalBoolean(attrs.remove("active"))
+        boolean disabled = optionalBoolean(attrs.remove("disabled"))
 
-        String clazz
-    }
-
-    static enum ButtonStyle {
-        DEFAULT(clazz: "default"),
-        PRIMARY(clazz: "primary"),
-        SUCCESS(clazz: "success"),
-        INFO(clazz: "info"),
-        WARNING(clazz: "warning"),
-        DANGER(clazz: "danger"),
-        LINK(clazz: "link")
-
-        String clazz
+        // Preparation
+        List classes = ["btn", clazz, "btn-$style.clazz"]
+        if (size != ButtonSize.DEFAULT) {
+            classes.add("btn-$size.clazz")
+        }
+        if (block) {
+            classes.add("btn-block")
+        }
+        if (active) {
+            classes.add("active")
+        }
+        if (disabled) {
+            classes.add("disabled")
+        }
+        if (tagContextService.isInContext("twbs:navbar") && !tagContextService.isInContext("twbs:navbarForm")) {
+            classes.add("navbar-btn")
+        }
+        return [disabled: disabled, classes: classes.join(" "), attrs: attrs]
     }
 
     def button = { attrs, body ->
-        ButtonStyle style = attrs.btnstyle ?: ButtonStyle.DEFAULT
-        String type = attrs.type ?: null
-        String name = attrs.name ?: ""
-        String id = attrs.id ? "id='$attrs.id'" : ""
-        String formaction = attrs.formaction ?: name
-        String sizeAttr = computeSizeAttribute(attrs.size as ButtonSize)
-
-        out << "<button"
-        if (type) {
-            out << " type=\"$type\""
+        assistAutoComplete(attrs.size, attrs.style, attrs.class, attrs.block, attrs.active, attrs.disabled)
+        Map model = prepareCommonButtonAttributes(attrs)
+        if (model.disabled) {
+            model.disabledAttribute = expandAttribute("disabled", "disabled")
+        } else {
+            model.disabledAttribute = ""
         }
-        out << " class=\"btn btn-${style.clazz} $sizeAttr\" $id name=\"$name\" value=\"$formaction\">${body()}" +
-                "</button>"
+
+        out << render([plugin: "twbs3", template: "/twbs/button/button", model: model], body)
     }
 
     def linkButton = { attrs, body ->
-        ButtonStyle style = attrs.btnstyle ?: ButtonStyle.DEFAULT
-        String controller = attrs.controller ?: null
-        String action = attrs.action ?: null
-        String id = attrs.id ?: null
-        String domId = attrs.domId ? "id='$attrs.domId'" : ""
-        String sizeAttr = computeSizeAttribute(attrs.size as ButtonSize)
-        String clazz = attrs.class ?: ""
-        Map domAttrs = attrs.domAttrs ?: [:]
-
-        out << "<a href=\"${computeLink(controller, action, id)}\" class=\"btn btn-" +
-                "${style.clazz} $clazz $sizeAttr\" $domId "
-        domAttrs.each { k, v -> out << "$k='$v' " }
-        out << ">"
-        out << body()
-        out << "</a>"
-    }
-
-    String computeSizeAttribute(ButtonSize size) {
-        return (size == null || size == ButtonSize.DEFAULT) ? "" : "btn-${size.clazz}"
-    }
-
-    String computeLink(String controller, String action, String id) {
-        if (controller == null && action == null && id == null) {
-            return "#"
-        }
-        return createLink(controller: controller, action: action, id: id)
+        assistAutoComplete(attrs.size, attrs.style, attrs.class, attrs.block, attrs.active, attrs.disabled,
+                attrs.absolute, attrs.action, attrs.base, attrs.controller, attrs.event, attrs.fragment, attrs.id,
+                attrs.mapping, attrs.params, attrs.uri, attrs.url)
+        Map model = prepareCommonButtonAttributes(attrs)
+        attrs.class = model.classes
+        out << g.link(attrs, body)
     }
 
 }

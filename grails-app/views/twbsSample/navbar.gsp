@@ -41,6 +41,7 @@
 
         <twbs:navbarPullRight>
             <twbs:navbarLinks>
+                <twbs:button>Test button</twbs:button>
                 <twbs:navbarLink action="table" active="true">Link 1</twbs:navbarLink>
                 <twbs:navbarLink action="table">Link 2</twbs:navbarLink>
                 <twbs:navbarLink action="table">Link 3</twbs:navbarLink>

@@ -19,7 +19,7 @@ class NavbarTagLib {
             String bodyContent = body()
             tagCaptureService.requireTags("twbs:navbar", "navbar-brand")
 
-            NavBarPlacement placement = attrs.remove("placement") ?: NavBarPlacement.DEFAULT
+            NavBarPlacement placement = attrs.remove("placement") as NavBarPlacement ?: NavBarPlacement.DEFAULT
             boolean inverse = optionalBoolean(attrs.remove("inverse"))
 
             Map model = [navType: (inverse) ? "navbar-inverse" : "navbar-default", navPlacement: placement.className]
