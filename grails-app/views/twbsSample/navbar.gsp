@@ -8,6 +8,9 @@
 <body>
 
 <twbs:row>
+    <twbs:pageHeader>
+        <h1>Navigation bars</h1>
+    </twbs:pageHeader>
     <twbs:navbar inverse="false">
         <g:content key="navbar-brand">Brand ${System.currentTimeMillis()}</g:content>
         <twbs:navbarPullRight>
