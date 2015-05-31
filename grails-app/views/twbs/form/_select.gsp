@@ -1,5 +1,5 @@
 <%@ page import="dk.danthrane.TagLibUtils; dk.danthrane.twbs.Validation" %>
-<div class="form-group ${validationClass} ${clazz}">
+<div class="form-group ${validationClass} ${sizeClass} ${clazz}">
     <g:render template="/twbs/form/defaultLabel" model="${pageScope.variables}" />
 
     <g:render template="/twbs/form/openHorizontalWrapper" model="${pageScope.variables}" />

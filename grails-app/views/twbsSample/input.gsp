@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.Icon; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.NavBarPlacement; dk.danthrane.twbs.ContextualColor; dk.danthrane.twbs.Validation" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.InputSize; dk.danthrane.twbs.Icon; dk.danthrane.twbs.ButtonSize; dk.danthrane.twbs.ButtonStyle; dk.danthrane.twbs.NavBarPlacement; dk.danthrane.twbs.ContextualColor; dk.danthrane.twbs.Validation" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="twbsmain"/>
@@ -70,7 +70,7 @@
 
         <twbs:form horizontal="true">
             <twbs:input name="input4" showLabel="true" />
-            <twbs:input name="input4" showLabel="false">
+            <twbs:input name="input4" showLabel="false" size="${InputSize.LARGE}">
                 <g:content key="addon-right">
                     <twbs:inputGroupAddon>
                         <twbs:radio name="radio" showLabel="false"/>
@@ -83,7 +83,7 @@
                 </g:content>
                 I don't have a label
             </twbs:input>
-            <twbs:input name="input4" showLabel="true">
+            <twbs:input name="input4" showLabel="true" size="${InputSize.SMALL}">
                 <g:content key="addon-right">
                     <twbs:inputGroupAddon>
                         <twbs:radio name="radio" showLabel="false"/>
@@ -96,14 +96,18 @@
                 </g:content>
                 I do have a label
             </twbs:input>
-            <twbs:select name="test-select" list="${[1,2,3]}">
+            <twbs:select name="test-select" list="${[1,2,3]}" size="${InputSize.LARGE}">
                 This is help text
             </twbs:select>
             <twbs:select name="test-select" list="${[1,2,3]}" showLabel="false">
                 This is help text
             </twbs:select>
-            <twbs:textArea name="foo2" validation="${Validation.SUCCESS}">This is also help</twbs:textArea>
-            <twbs:textArea name="foo3" showLabel="false">This is help</twbs:textArea>
+            <twbs:textArea name="foo2" validation="${Validation.SUCCESS}" size="${InputSize.LARGE}" rows="4">
+                This is also help
+            </twbs:textArea>
+            <twbs:textArea name="foo3" showLabel="false" rows="4">
+                This is help
+            </twbs:textArea>
             <twbs:checkbox name="input" />
             <twbs:checkbox name="input" showLabel="false" />
             <twbs:radio name="input" />

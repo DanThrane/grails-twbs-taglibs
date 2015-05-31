@@ -37,6 +37,13 @@ class FormTagLib {
         String disabledAttr = disabled ? "disabled" : ""
 
         // Styling
+        InputSize size = attrs.remove("size") as InputSize ?: InputSize.DEFAULT
+        String sizeClass = ""
+        String inputSizeClass = ""
+        if (size != InputSize.DEFAULT) {
+            sizeClass = "form-group-$size.className"
+            inputSizeClass = "input-$size.className"
+        }
         Map horizontalStyle = tagContextService.getContextAttributes("form-horizontal")
         boolean isHorizontal = horizontalStyle != null
         String clazz = attrs.class ?: ""
@@ -82,7 +89,7 @@ class FormTagLib {
         [name: name, id: id, labelText: labelText, placeholder: placeholder, disabled: disabledAttr,
          clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value,
          attrs: attrs, rawPlaceholder: rawPlaceholder, showLabel: showLabel, isHorizontal: isHorizontal,
-         horizontalStyle: horizontalStyle]
+         horizontalStyle: horizontalStyle, size: size, sizeClass: sizeClass, inputSizeClass: inputSizeClass]
     }
 
     /**
@@ -100,7 +107,7 @@ class FormTagLib {
     def input = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
                 attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
-                attrs.showLabel)
+                attrs.showLabel, attrs.size)
 
         Map model = prepareCommonInputAttributes("input", attrs)
         String type = attrs.remove("type") ?: "text"
@@ -134,7 +141,7 @@ class FormTagLib {
     def textArea = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
                 attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
-                attrs.showLabel)
+                attrs.showLabel, attrs.size)
 
         Map model = prepareCommonInputAttributes("textArea", attrs)
 
@@ -203,7 +210,8 @@ class FormTagLib {
      */
     def select = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
-                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.placeholder, attrs.showLabel)
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.placeholder, attrs.showLabel,
+                attrs.size)
 
         Map model = prepareCommonInputAttributes("select", attrs)
 

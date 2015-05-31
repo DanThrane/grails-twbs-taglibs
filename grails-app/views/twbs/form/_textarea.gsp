@@ -1,5 +1,6 @@
 <%@ page import="dk.danthrane.twbs.FormTagLib; dk.danthrane.TagLibUtils; dk.danthrane.twbs.Validation" %>
-<div class="form-group ${validationClass} ${clazz}">
+%{-- TODO: Doesn't render properly when size is set --}%
+<div class="form-group ${validationClass} ${sizeClass} ${clazz}">
     <g:render template="/twbs/form/defaultLabel" model="${pageScope.variables}" />
 
     <g:render template="/twbs/form/openHorizontalWrapper" model="${pageScope.variables}" />

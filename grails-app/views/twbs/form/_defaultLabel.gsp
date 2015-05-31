@@ -1,6 +1,6 @@
 <g:if test="${showLabel}">
     <g:if test="${isHorizontal}">
-        <label for="${id}" class="${horizontalStyle.size.getClassName(horizontalStyle.columns)}">
+        <label for="${id}" class="${horizontalStyle.size.getClassName(horizontalStyle.columns)} control-label">
             ${labelText}
         </label>
     </g:if>

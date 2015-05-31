@@ -1,6 +1,6 @@
 <%@ page import="dk.danthrane.twbs.Validation; dk.danthrane.TagLibUtils; dk.danthrane.twbs.FormTagLib" %>
 
-<div class="form-group ${validationClass} ${clazz}">
+<div class="form-group ${validationClass} ${sizeClass} ${clazz}">
     <g:render template="/twbs/form/defaultLabel" model="${pageScope.variables}" />
 
     <g:render template="/twbs/form/openHorizontalWrapper" model="${pageScope.variables}" />
@@ -11,7 +11,7 @@
                 <g:selectContent key="addon-left" />
             </g:ifContentAvailable>
 
-            <input name="${name}" type="${type}" class="form-control" id="${id}" type="${type}" value="${value}"
+            <input name="${name}" type="${type}" class="form-control ${inputSizeClass}" id="${id}" type="${type}" value="${value}"
                 ${raw(placeholder)} ${disabled} ${raw(TagLibUtils.expandAttributes(attrs))}>
 
             <g:ifContentAvailable key="addon-right">
@@ -20,7 +20,7 @@
         </div>
     </g:if>
     <g:else>
-        <input name="${name}" type="${type}" class="form-control" id="${id}" type="${type}" value="${value}"
+        <input name="${name}" type="${type}" class="form-control ${inputSizeClass}" id="${id}" type="${type}" value="${value}"
             ${raw(placeholder)} ${disabled} ${raw(TagLibUtils.expandAttributes(attrs))}>
     </g:else>
 
