@@ -8,8 +8,7 @@ import static dk.danthrane.TagLibUtils.*
 class DropDownTagLib {
     static namespace = "twbs"
 
-    def dropdownButton = { attrs, body ->
-        assistAutoComplete(attrs.size, attrs.style, attrs.class, attrs.block, attrs.active, attrs.disabled)
+    private Map prepareCommonToggleAttributes(attrs, Closure body) {
         String id = attrs.id ?: "dropdownMenu"
         boolean dropup = optionalBoolean(attrs.remove("dropup"))
         boolean expanded = optionalBoolean(attrs.remove("expanded"))
@@ -23,10 +22,22 @@ class DropDownTagLib {
         }
 
         String bodyContent = body()
-        Map model = [id: id, dropdownClass: dropdownClass, clazz: clazz, expanded: expanded, hideCaret: hideCaret,
-                     attrs: attrs]
+        return [id: id, dropdownClass: dropdownClass, clazz: clazz, expanded: expanded, hideCaret: hideCaret,
+                     attrs: attrs, bodyContent: bodyContent]
+    }
 
-        out << render([plugin: "twbs3", template: "/twbs/dropdown/button", model: model], { bodyContent })
+    def dropdownToggle = { attrs, body ->
+        assistAutoComplete(attrs.size, attrs.style, attrs.class, attrs.block, attrs.active, attrs.disabled,
+                           attrs.dropup, attrs.expanded, attrs.hideCaret, attrs.class)
+
+        Map model = prepareCommonToggleAttributes(attrs, body)
+        out << render([plugin: "twbs3", template: "/twbs/dropdown/button", model: model], { model.bodyContent })
+    }
+
+    def navDropdownToggle = { attrs, body ->
+        assistAutoComplete(attrs.dropup, attrs.expanded, attrs.hideCaret, attrs.class)
+        Map model = prepareCommonToggleAttributes(attrs, body)
+        out << render([plugin: "twbs3", template: "/twbs/dropdown/navToggle", model: model], { model.bodyContent })
     }
 
     def dropdownMenu = { attrs, body ->

@@ -10,6 +10,20 @@
 <twbs:row>
     <twbs:navbar inverse="false">
         <g:content key="navbar-brand">Brand ${System.currentTimeMillis()}</g:content>
+        <twbs:navbarPullRight>
+            <twbs:navbarLinks>
+                <twbs:navDropdownToggle>
+                    My Dropdown
+                    <twbs:dropdownMenu>
+                        <twbs:dropdownHeader>Header!</twbs:dropdownHeader>
+                        <twbs:dropdownItem disabled="true">Item 1</twbs:dropdownItem>
+                        <twbs:dropdownItem>Item 2</twbs:dropdownItem>
+                        <twbs:dropdownDivider />
+                        <twbs:dropdownItem>Item 3</twbs:dropdownItem>
+                    </twbs:dropdownMenu>
+                </twbs:navDropdownToggle>
+            </twbs:navbarLinks>
+        </twbs:navbarPullRight>
     </twbs:navbar>
 
     <twbs:navbar inverse="true">
