@@ -10,4 +10,14 @@ class MiscTagLib {
         out << "<span class='caret'></span>"
     }
 
+    def pageHeader = { attrs, body ->
+        out << "<div class=\"page-header\">\n" +
+                body() +
+                "</div>"
+    }
+
+    def badge = { attrs, body ->
+        out << "<span class=\"badge\">${body()}</span>"
+    }
+
 }
