@@ -6,23 +6,15 @@ class TwbsSampleController {
         render "Testing"
     }
 
-    def table() {
-        [:]
-    }
+    def table() { }
 
-    def progressbar() {
-        [:]
-    }
+    def progressbar() { }
 
-    def navbar () {
-        [:]
-    }
+    def navbar () { }
 
-    def buttons() {
-        [:]
-    }
+    def buttons() { }
 
-    def input() {
+    def input() { }
 
-    }
+    def dropdown() { }
 }

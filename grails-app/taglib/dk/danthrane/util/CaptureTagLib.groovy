@@ -19,8 +19,6 @@ class CaptureTagLib {
 
         if (tag != null) {
             out << tag()
-        } else {
-            out << "No content?"
         }
     }
 
