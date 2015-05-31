@@ -1,4 +1,4 @@
-<%@ page import="dk.danthrane.twbs.NavBarPlacement; dk.danthrane.twbs.ContextualColor; dk.danthrane.twbs.Validation" contentType="text/html;charset=UTF-8" %>
+<%@ page import="dk.danthrane.twbs.NavStyle; dk.danthrane.twbs.NavBarPlacement; dk.danthrane.twbs.ContextualColor; dk.danthrane.twbs.Validation" contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
     <meta name="layout" content="twbsmain"/>
@@ -62,6 +62,53 @@
             </twbs:navbarLinks>
         </twbs:navbarPullRight>
     </twbs:navbar>
+
+    <g:each in="${NavStyle.values()}" var="style">
+        <h2>${style}</h2>
+        <h4>Normal</h4>
+        <twbs:nav style="${style}">
+            <twbs:navItem active="true">Item 1</twbs:navItem>
+            <twbs:navItem disabled="true">Item 2</twbs:navItem>
+            <twbs:navItem>Item 3</twbs:navItem>
+            <twbs:navDropdownToggle>
+                Dropdown toggle
+                <twbs:dropdownMenu>
+                    <twbs:dropdownItem>Hello!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 2!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 3!</twbs:dropdownItem>
+                </twbs:dropdownMenu>
+            </twbs:navDropdownToggle>
+        </twbs:nav>
+        <h4>Justified</h4>
+        <twbs:nav style="${style}" justified="true">
+            <twbs:navItem active="true">Item 1</twbs:navItem>
+            <twbs:navItem disabled="true">Item 2</twbs:navItem>
+            <twbs:navItem>Item 3</twbs:navItem>
+            <twbs:navDropdownToggle>
+                Dropdown toggle
+                <twbs:dropdownMenu>
+                    <twbs:dropdownItem>Hello!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 2!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 3!</twbs:dropdownItem>
+                </twbs:dropdownMenu>
+            </twbs:navDropdownToggle>
+        </twbs:nav>
+        <h4>Stacked</h4>
+        <twbs:nav style="${style}" stacked="true">
+            <twbs:navItem active="true">Item 1</twbs:navItem>
+            <twbs:navItem disabled="true">Item 2</twbs:navItem>
+            <twbs:navItem>Item 3</twbs:navItem>
+            <twbs:navDropdownToggle>
+                Dropdown toggle
+                <twbs:dropdownMenu>
+                    <twbs:dropdownItem>Hello!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 2!</twbs:dropdownItem>
+                    <twbs:dropdownItem>Hello 3!</twbs:dropdownItem>
+                </twbs:dropdownMenu>
+            </twbs:navDropdownToggle>
+        </twbs:nav>
+    </g:each>
+
 </twbs:row>
 
 </body>
