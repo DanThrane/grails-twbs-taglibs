@@ -20,7 +20,7 @@
         <g:content key="navbar-brand">Brand 22</g:content>
         <twbs:navbarPullRight>
             <twbs:navbarForm>
-                <twbs:input name="Test" />
+                <twbs:input name="Test" showLabel="false"/>
                 <twbs:button>Search</twbs:button>
             </twbs:navbarForm>
         </twbs:navbarPullRight>

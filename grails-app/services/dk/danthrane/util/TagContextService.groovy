@@ -6,26 +6,58 @@ package dk.danthrane.util
 class TagContextService {
     RequestStoreService requestStoreService
 
-    private void enterContext(String context) {
-        List contexts = requestStoreService.contexts
+    class Context {
+        int count = 0
+        List<Map> attributes = []
+    }
+
+    private void enterContext(String contextName, Map attributes) {
+        Map contexts = requestStoreService.contexts
         if (!contexts) {
-            contexts = requestStoreService.contexts = []
+            contexts = requestStoreService.contexts = [:]
         }
-        contexts.add(context)
+
+        Context context = contexts[contextName]
+        if (context == null) {
+            context = contexts[contextName] = new Context()
+        }
+        context.count++
+        context.attributes += attributes
     }
 
-    private void leaveContext() {
-        requestStoreService.contexts.pop()
+    private void leaveContext(String contextName) {
+        assert requestStoreService.contexts != null
+        Context context = requestStoreService.contexts[contextName]
+
+        context.count--
+        context.attributes.pop()
     }
 
-    boolean isInContext(String context) {
-        requestStoreService.contexts.contains(context)
+    Context getContext(String contextName) {
+        Map contexts = requestStoreService.contexts
+        if (contexts != null) {
+            return contexts[contextName]
+        }
+        return null
     }
 
-    void context(String context, Closure closure) {
-        enterContext(context)
+    Map getContextAttributes(String contextName) {
+        Context context = getContext(contextName)
+        return (context != null && context.attributes.size() > 0) ? context.attributes.last() : null
+    }
+
+    boolean isInContext(String contextName) {
+        return getContext(contextName)?.count > 0
+    }
+
+    void contextWithAttributes(String ctx, Map attributes, Closure closure) {
+        enterContext(ctx, attributes)
         closure()
-        leaveContext()
+        leaveContext(ctx)
+    }
+
+    void context(String ctx, Closure closure) {
+        contextWithAttributes(ctx, [:], closure)
     }
 
 }

@@ -15,4 +15,12 @@ enum GridSize {
     private GridSize(String columnName) {
         this.columnName = columnName
     }
+
+    String getClassName(int columns) {
+        return "col-$columnName-$columns"
+    }
+
+    String getOffsetName(int columns) {
+        return "col-$columnName-offset-$columns"
+    }
 }

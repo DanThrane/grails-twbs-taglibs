@@ -21,4 +21,8 @@ class TwbsSampleController {
     def buttons() {
         [:]
     }
+
+    def input() {
+
+    }
 }

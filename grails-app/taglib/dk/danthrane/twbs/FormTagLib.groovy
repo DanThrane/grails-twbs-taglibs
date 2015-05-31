@@ -1,11 +1,16 @@
 package dk.danthrane.twbs
 
+import dk.danthrane.util.TagCaptureService
+import dk.danthrane.util.TagContextService
 import org.springframework.validation.Errors
 
 import static dk.danthrane.TagLibUtils.*
 
 class FormTagLib {
     static namespace = "twbs"
+
+    TagCaptureService tagCaptureService
+    TagContextService tagContextService
 
     private String findFieldFromName(String name) {
         int idx = name.lastIndexOf('.')
@@ -32,9 +37,12 @@ class FormTagLib {
         String disabledAttr = disabled ? "disabled" : ""
 
         // Styling
+        Map horizontalStyle = tagContextService.getContextAttributes("form-horizontal")
+        boolean isHorizontal = horizontalStyle != null
         String clazz = attrs.class ?: ""
         String rawPlaceholder = attrs.placeholder
         String placeholder = expandOptionalAttribute("placeholder", attrs.remove("placeholder"))
+        boolean showLabel = optionalBoolean(attrs.remove("showLabel"), true)
 
         String labelText = attrs.remove("labelText")
         if (labelText == null) {
@@ -73,7 +81,8 @@ class FormTagLib {
 
         [name: name, id: id, labelText: labelText, placeholder: placeholder, disabled: disabledAttr,
          clazz: clazz, validation: validation, validationClass: getValidationClass(validation), value: value,
-         attrs: attrs, rawPlaceholder: rawPlaceholder]
+         attrs: attrs, rawPlaceholder: rawPlaceholder, showLabel: showLabel, isHorizontal: isHorizontal,
+         horizontalStyle: horizontalStyle]
     }
 
     /**
@@ -90,13 +99,27 @@ class FormTagLib {
      */
     def input = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
-                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField)
+                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
+                attrs.showLabel)
 
         Map model = prepareCommonInputAttributes("input", attrs)
         String type = attrs.remove("type") ?: "text"
         model.type = type
 
-        out << render([plugin: "twbs3", template: "/twbs/form/input", model: model], body)
+        String bodyContent = body()
+        def leftAddon = tagCaptureService.hasTag("addon-left")
+        def rightAddon = tagCaptureService.hasTag("addon-right")
+        model.hasAddons = leftAddon || rightAddon
+
+        out << render([plugin: "twbs3", template: "/twbs/form/input", model: model], { bodyContent })
+    }
+
+    def inputGroupAddon = { attrs, body ->
+        out << render([plugin: "twbs3", template: "/twbs/form/addon"], body)
+    }
+
+    def inputGroupButton = { attrs, body ->
+        out << render([plugin: "twbs3", template: "/twbs/form/buttonAddon"], body)
     }
 
     /**
@@ -110,11 +133,23 @@ class FormTagLib {
      */
     def textArea = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.placeholder,
-                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField)
+                attrs.placeholder, attrs.disabled, attrs.validation, attrs.value, attrs.bean, attrs.beanField,
+                attrs.showLabel)
 
         Map model = prepareCommonInputAttributes("textArea", attrs)
 
         out << render([plugin: "twbs3", template: "/twbs/form/textarea", model: model], body)
+    }
+
+    private Map prepareCheckboxAndRadio(name, attrs) {
+        Map model = prepareCommonInputAttributes(name, attrs)
+        String checkedAttribute = ""
+        if (model.value) {
+            model.value = Boolean.parseBoolean(model.value)
+            if (model.value) checkedAttribute = "checked"
+        }
+        model.checked = checkedAttribute
+        return model
     }
 
     /**
@@ -127,17 +162,26 @@ class FormTagLib {
      */
     def checkbox = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
-                attrs.validation, attrs.value, attrs.bean, attrs.beanField)
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.showLabel)
 
-        Map model = prepareCommonInputAttributes("checkbox", attrs)
-        String checkedAttribute = ""
-        if (model.value) {
-            model.value = Boolean.parseBoolean(model.value)
-            if (model.value) checkedAttribute = "checked"
-        }
-        model.checked = checkedAttribute
-
+        Map model = prepareCheckboxAndRadio("checkbox", attrs)
         out << render([plugin: "twbs3", template: "/twbs/form/checkbox", model: model], body)
+    }
+
+    /**
+     * Displays a radio.
+     *
+     * All core form attributes are accepted, except for placeholder. Extra attributes are applied to the
+     * &lt;input&gt; element
+     *
+     * Body:        This tag doesn't take any body.
+     */
+    def radio = { attrs, body ->
+        assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.showLabel)
+
+        Map model = prepareCheckboxAndRadio("radio", attrs)
+        out << render([plugin: "twbs3", template: "/twbs/form/radio", model: model], body)
     }
 
     /**
@@ -159,7 +203,7 @@ class FormTagLib {
      */
     def select = { attrs, body ->
         assistAutoComplete(attrs.name, attrs.id, attrs.labelText, attrs.labelCode, attrs.disabled,
-                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.placeholder)
+                attrs.validation, attrs.value, attrs.bean, attrs.beanField, attrs.placeholder, attrs.showLabel)
 
         Map model = prepareCommonInputAttributes("select", attrs)
 
@@ -199,6 +243,32 @@ class FormTagLib {
         model.list = listForTemplate
         model.multiple = multipleAttr
         out << render([plugin: "twbs3", template: "/twbs/form/select", model: model], body)
+    }
+
+    def form = { attrs, body ->
+        boolean inline = optionalBoolean(attrs.remove("inline"))
+        boolean horizontal = optionalBoolean(attrs.remove("horizontal"))
+        String clazz = attrs.remove("class") ?: ""
+        List classes = [clazz]
+        if (inline) {
+            classes += "form-inline"
+        }
+        if (horizontal) {
+            classes += "form-horizontal"
+        }
+        Map model = [classes: classes.join(" "), attrs: attrs]
+
+        if (horizontal) {
+            GridSize size = attrs.remove("label-grid-size") as GridSize ?: GridSize.MD
+            Integer columns = attrs.remove("label-cols") as Integer ?: 3
+            Map gridAttributes = [size: size, columns: columns]
+
+            tagContextService.contextWithAttributes("form-horizontal", gridAttributes) {
+                out << render([plugin: "twbs3", template: "/twbs/form/form", model: model], body)
+            }
+        } else {
+            out << render([plugin: "twbs3", template: "/twbs/form/form", model: model], body)
+        }
     }
 
 }

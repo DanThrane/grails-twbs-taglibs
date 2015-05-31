@@ -33,6 +33,14 @@ class TagCaptureService {
         }
     }
 
+    boolean hasTag(String key) {
+        def attribute = getTags()
+        if (attribute != null && attribute.containsKey(key)) {
+            return true
+        }
+        return false
+    }
+
     void requireTags(String tag, String... tags) {
         Map allTags = getTags()
         if (allTags == null) {

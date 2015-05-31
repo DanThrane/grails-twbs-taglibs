@@ -1,7 +1,5 @@
 package dk.danthrane.util
 
-import org.codehaus.groovy.grails.web.taglib.exceptions.GrailsTagException
-
 import static dk.danthrane.TagLibUtils.*
 
 /**
@@ -16,13 +14,21 @@ class CaptureTagLib {
     }
 
     def selectContent = { attrs, body ->
-        String key = attrs.key ?: fail(String, "key", "g:content")
+        String key = attrs.key ?: fail(String, "key", "g:selectContent")
         Closure tag = tagCaptureService.retrieveTag(key)
 
         if (tag != null) {
             out << tag()
         } else {
-            throw new GrailsTagException("Unable to find content with key='$key'")
+            out << "No content?"
+        }
+    }
+
+    def ifContentAvailable = { attrs, body ->
+        String key = attrs.key ?: fail(String, "key", "g:ifContentAvailable")
+
+        if (tagCaptureService.hasTag(key)) {
+            out << body()
         }
     }
 
