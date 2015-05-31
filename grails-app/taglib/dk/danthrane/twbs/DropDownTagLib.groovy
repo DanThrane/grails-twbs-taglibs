@@ -1,5 +1,7 @@
 package dk.danthrane.twbs
 
+import dk.danthrane.util.TagContextService
+
 import static dk.danthrane.TagLibUtils.*
 
 /**
@@ -7,6 +9,8 @@ import static dk.danthrane.TagLibUtils.*
  */
 class DropDownTagLib {
     static namespace = "twbs"
+
+    TagContextService tagContextService
 
     private Map prepareCommonToggleAttributes(attrs, Closure body) {
         String id = attrs.id ?: "dropdownMenu"
@@ -31,6 +35,7 @@ class DropDownTagLib {
                            attrs.dropup, attrs.expanded, attrs.hideCaret, attrs.class)
 
         Map model = prepareCommonToggleAttributes(attrs, body)
+        model.skipWrapper = tagContextService.isInContext("twbs:buttonGroup")
         out << render([plugin: "twbs3", template: "/twbs/dropdown/button", model: model], { model.bodyContent })
     }
 

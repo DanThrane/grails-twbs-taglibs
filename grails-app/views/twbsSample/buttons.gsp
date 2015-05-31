@@ -8,6 +8,9 @@
             border-collapse: separate;
             border-spacing: 1em 1em;
         }
+        body {
+            margin: 50px;
+        }
     </style>
 </head>
 
@@ -105,6 +108,78 @@
             </g:each>
             </tbody>
         </table>
+
+        <h2>Split Buttons</h2>
+
+        <twbs:buttonGroup>
+            <twbs:button>Button</twbs:button>
+            <twbs:dropdownToggle>
+                <twbs:dropdownMenu>
+                    <twbs:dropdownItem>Hello!</twbs:dropdownItem>
+                </twbs:dropdownMenu>
+            </twbs:dropdownToggle>
+        </twbs:buttonGroup>
+
+        <h2>Justified Buttons</h2>
+
+        <twbs:buttonGroup justified="true">
+            <twbs:button>1</twbs:button>
+            <twbs:button>2</twbs:button>
+            <twbs:button>3</twbs:button>
+        </twbs:buttonGroup>
+
+        <twbs:buttonGroup justified="true">
+            <twbs:linkButton>1</twbs:linkButton>
+            <twbs:linkButton>2</twbs:linkButton>
+            <twbs:linkButton>3</twbs:linkButton>
+        </twbs:buttonGroup>
+
+        <h2>Vertical Group</h2>
+
+        <twbs:buttonGroup vertical="true">
+            <twbs:button>1</twbs:button>
+            <twbs:button>2</twbs:button>
+            <twbs:button>3</twbs:button>
+            <twbs:buttonGroup>
+                <twbs:dropdownToggle>
+                    Hello!
+                    <twbs:dropdownMenu>
+                        <twbs:dropdownItem>An item</twbs:dropdownItem>
+                    </twbs:dropdownMenu>
+                </twbs:dropdownToggle>
+            </twbs:buttonGroup>
+        </twbs:buttonGroup>
+
+        <h2>ButtonGroup Size</h2>
+
+        <twbs:buttonGroup size="${ButtonSize.LARGE}">
+            <twbs:button>1</twbs:button>
+            <twbs:button>2</twbs:button>
+            <twbs:button>3</twbs:button>
+        </twbs:buttonGroup>
+
+        <h2>Toolbars</h2>
+
+        <twbs:buttonToolbar>
+            <twbs:buttonGroup>
+                <twbs:button>1</twbs:button>
+                <twbs:button>2</twbs:button>
+                <twbs:button>3</twbs:button>
+            </twbs:buttonGroup>
+
+            <twbs:buttonGroup>
+                <twbs:button>4</twbs:button>
+                <twbs:button>5</twbs:button>
+            </twbs:buttonGroup>
+
+            <twbs:buttonGroup>
+                <twbs:button>6</twbs:button>
+                <twbs:button>7</twbs:button>
+                <twbs:button>8</twbs:button>
+                <twbs:button>9</twbs:button>
+            </twbs:buttonGroup>
+        </twbs:buttonToolbar>
+
     </twbs:column>
 </twbs:row>
 </body>
