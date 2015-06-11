@@ -4,7 +4,7 @@
     <div class="btn-group">
 </g:if>
 
-<button type="button" class="${classes}" ${raw(disabledAttribute)} ${raw(TagLibUtils.expandAttributes(attrs))}>
+<button class="${classes}" ${raw(disabledAttribute)} ${raw(TagLibUtils.expandAttributes(attrs))}>
     ${raw(body())}
 </button>
 

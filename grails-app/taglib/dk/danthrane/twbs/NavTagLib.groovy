@@ -9,17 +9,20 @@ class NavTagLib {
     static namespace = "twbs"
 
     def nav = { attrs, body ->
-        NavStyle style = attrs.remove("style") ?: fail(NavStyle, "style", "twbs:nav")
+        NavStyle style = attrs.remove("style")
         boolean justified = optionalBoolean(attrs.remove("justified"))
         boolean stacked = optionalBoolean(attrs.remove("stacked"))
         String clazz = attrs.remove("class") ?: ""
-        List classes = [clazz, "nav-$style.baseName"]
+        List classes = [clazz]
 
         if (justified) {
             classes += "nav-justified"
         }
         if (stacked) {
             classes += "nav-stacked"
+        }
+        if (style != null) {
+            classes += "nav-$style.baseName"
         }
 
         Map model = [classes: classes.join(" "), attrs: attrs]
