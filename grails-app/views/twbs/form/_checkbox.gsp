@@ -11,15 +11,23 @@
 <g:if test="${showLabel}">
     <div class="checkbox ${clazz}">
         <label class="btn btn-link">
-            <input type="checkbox" name="${name}" id="${id}" ${checked} ${disabled}
-                ${raw(TagLibUtils.expandAttributes(attrs))} />
+            <g:if test="${disabled}">
+                <g:checkBox name="${name}" id="${id}" checked="${checked}" disabled="${disabled}" />
+            </g:if>
+            <g:else>
+                <g:checkBox name="${name}" id="${id}" checked="${checked}" />
+            </g:else>
             ${labelText}
         </label>
     </div>
 </g:if>
 <g:else>
-    <input type="checkbox" name="${name}" id="${id}" ${checked} ${disabled}
-        ${raw(TagLibUtils.expandAttributes(attrs))} />
+    <g:if test="${disabled}">
+        <g:checkBox name="${name}" id="${id}" checked="${checked}" disabled="${disabled}" />
+    </g:if>
+    <g:else>
+        <g:checkBox name="${name}" id="${id}" checked="${checked}" />
+    </g:else>
 </g:else>
 
 <g:if test="${validation != Validation.DEFAULT && !showLabel}">
