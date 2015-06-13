@@ -1,5 +1,7 @@
 package dk.danthrane.twbs
 
+import dk.danthrane.TagLibUtils
+
 class GridTagLib {
     static namespace = "twbs"
 
@@ -13,8 +15,8 @@ class GridTagLib {
     }
 
     def row = { attrs, body ->
-        String clazz = attrs.class ?: ""
-        out << "<div class='row $clazz'>"
+        String clazz = attrs.remove("class") ?: ""
+        out << "<div class='row $clazz' ${TagLibUtils.expandAttributes(attrs)}>"
         out << body()
         out << '</div>'
     }
