@@ -5,13 +5,14 @@ bootstrap.VALIDATION_WARNING = { clazz: "has-warning" };
 bootstrap.VALIDATION_ERROR   = { clazz: "has-error" };
 
 bootstrap.addValidationClass = function(element, validationClass) {
+    var parent = element.closest(".form-group");
     if (validationClass.clazz === null) {
-        element.removeClass("has-feedback has-success has-warning has-error");
+        parent.removeClass("has-feedback has-success has-warning has-error");
     } else {
-        element.addClass("has-feedback " + validationClass.clazz);
+        parent.addClass("has-feedback " + validationClass.clazz);
     }
 };
 
-bootstrap.removeFormValidation = function() {
-    $(".has-feedback").removeClass("has-feedback has-success has-warning has-error");
+bootstrap.removeFormValidation = function(formElement) {
+    formElement.find(".has-feedback").removeClass("has-feedback has-success has-warning has-error");
 };
