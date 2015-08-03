@@ -30,4 +30,12 @@ class CaptureTagLib {
         }
     }
 
+    def ifContentNotAvailable = { attrs, body ->
+        String key = attrs.key ?: fail(String, "key", "g:ifContentNotAvailable")
+
+        if (!tagCaptureService.hasTag(key)) {
+            out << body()
+        }
+    }
+
 }
