@@ -69,8 +69,12 @@ class NavbarTagLib {
 
         String classes = ""
         boolean active = optionalBoolean(attrs.remove("active"))
+        boolean disabled = optionalBoolean(attrs.remove("disabled"))
         if (active) {
             classes = "active"
+        }
+        if (disabled) {
+            classes += " disabled"
         }
 
         String bodyContent = body()
