@@ -153,7 +153,7 @@ class FormTagLib {
         String checkedAttribute = ""
         if (model.value) {
             model.value = Boolean.parseBoolean(model.value)
-            if (model.value) checkedAttribute = "checked"
+            if (model.value) checkedAttribute = true
         }
         model.checked = checkedAttribute
         return model

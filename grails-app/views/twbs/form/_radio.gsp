@@ -11,14 +11,14 @@
 <g:if test="${showLabel}">
     <div class="radio ${clazz}">
         <label class="btn btn-link">
-            <input type="radio" name="${name}" id="${id}" ${checked} ${disabled}
+            <input type="radio" name="${name}" id="${id}" ${checked ? "checked" : ""} ${disabled}
                 ${raw(TagLibUtils.expandAttributes(attrs))} />
             ${labelText}
         </label>
     </div>
 </g:if>
 <g:else>
-    <input type="radio" name="${name}" id="${id}" ${checked} ${disabled}
+    <input type="radio" name="${name}" id="${id}" ${checked ? "checked" : ""} ${disabled}
         ${raw(TagLibUtils.expandAttributes(attrs))} />
 </g:else>
 
