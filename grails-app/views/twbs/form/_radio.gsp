@@ -13,6 +13,7 @@
         <label class="btn btn-link">
             <input type="radio" name="${name}" id="${id}" ${checked ? "checked" : ""} ${disabled}
                 ${raw(TagLibUtils.expandAttributes(attrs))} />
+            ${raw(body())}
             ${labelText}
         </label>
     </div>

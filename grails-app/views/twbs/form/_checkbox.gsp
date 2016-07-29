@@ -17,6 +17,7 @@
             <g:else>
                 <g:checkBox name="${name}" id="${id}" checked="${checked}" />
             </g:else>
+            ${raw(body())}
             ${labelText}
         </label>
     </div>
