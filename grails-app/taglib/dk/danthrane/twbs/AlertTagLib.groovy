@@ -4,7 +4,7 @@ class AlertTagLib {
     static namespace = "twbs"
 
     def alert = { attrs, body ->
-        boolean dismissible = attrs.dismissible ?: true
+        Boolean dismissible = attrs.dismissible ?: true
         String type = attrs.type ?: "info"
         out << "<div class=\"alert alert-$type"
         if (dismissible) {
